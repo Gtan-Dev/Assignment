@@ -1,88 +1,4 @@
-<?php 
-session_start();
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-include 'config.php';
-$error=NULL;
-if (isset($_POST['submit'])) {
-  //get form input
-
-$fname=$_POST['fname'];
-$lname=$_POST['lname'];
-$email=$_POST['email'];
-$pass=$_POST['pass'];
-$_SESSION['email']=$email;
-$_SESSION['fname']=$fname;
-//validation of input
-
-if (strlen($pass)<=5) {
-  $_SESSION['error'] = "Short password";
-}
-//put your regrex validation
-else{
-  //sanitize the form data
-
-  $fname=$conn->real_escape_string($fname);
-  $lname=$conn->real_escape_string($lname);
-  $email=$conn->real_escape_string($email);
-  $pass=$conn->real_escape_string($pass);
-  //encrpt password and genererate link
-  $pass=md5($pass);
-  $code=md5(time().$fname);
-  $insert=NULL;
-
-
-  //inserting data in table
-
-  $sql=$conn->query("SELECT * FROM assessment WHERE email='$email'");
-  $res=mysqli_num_rows($sql);
-  if ($res) {
-    $_SESSION['error'] = "{$email} - This email already exists !";
-  }
-if ($res==0) {
-//send email
-  require 'vendor/autoload.php';
-
-$mail = new PHPMailer(true);
-$body="
-<h2>Confirm your Email verification:</h2 
-   <a href='http://localhost/signup/verify.php?check=$code'>Confirm your Email</a>";
-try {
-  // $mail->SMTPDebug = 2;                  
-  $mail->isSMTP(true);                      
-  $mail->Host  = 'smtp.gmail.com;';         
-  $mail->SMTPAuth = true;             
-  $mail->Username = 'pattiradu@gmail.com';        
-  $mail->Password = 'patrick9876';            
-  $mail->SMTPSecure = 'tls';              
-  $mail->Port  = 587;
-
-  $mail->setFrom('jmvsheke100@gmail.com', 'Email verification link');    
-  $mail->addAddress($email);
-  $mail->isHTML(true);                
-  $mail->Subject = 'Email verification';
-  $mail->Body = $body;
-  $mail->AltBody = 'Body';
-  $mail->send();
-  $sql = "INSERT INTO `assessment` (`first_name`, `last_name`, `email`, `verified`, `password`, `code`) VALUES ('$fname','$lname','$email','',$pass','$code')";
-  $insert=$conn->query($sql);
-  if ($insert) {
-    header('location:welcome.php');
-  }else {
-    $_SESSION['error'] = "Insert error !";
-  }
-
-  
-} catch (Exception $e) {
-  $_SESSION['error'] = "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
-}
-//end emails
-
-}
-}
-}
-?>
-
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -120,7 +36,7 @@ try {
             unset($_SESSION['error']);
             }
         ?>
-    <form action="" method="POST">
+    <form action="welcome.php" method="POST">
         <div class="row g-1 py-1">
             <div class="col">
               <div class="position-relative">
@@ -149,7 +65,6 @@ try {
               <div class="position-relative">
                 <input type="password" class="form-control ps-4" placeholder="Choose Password" name="pass" id="view">
             <i class="fa fa-key text-primary position-absolute"  aria="true" style="top:10px;left:5px"></i>
-
    <i class="fa fa-eye pull-right text-primary position-absolute" onclick="show()"  aria="true" style="top:10px;right:5px"></i>
 
             
@@ -185,7 +100,7 @@ try {
         <div class="row g-1 py-2">
           <div class="col">
               <div class="position-relative">
-                <p class="text-danger">Already have an account?, <a href="backemail.php" style="text-decoration:none;color:red;">SIGN IN</a></p>
+                <p class="text-danger">Already have an account?, <a href="email_login.php" style="text-decoration:none;color:red;">SIGN IN</a></p>
             </div>
            </div>
           </form>

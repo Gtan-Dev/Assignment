@@ -1,3 +1,11 @@
+<?php
+session_start();
+include 'config.php';
+$email = $_SESSION['user']['email'];
+// $lname = $_SESSION['user']['lname']
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,18 +30,29 @@
             <h4>Welcome back !</h4><br>
 
             <!-- layout -->
-            <form action="">
+            <form action="pass_check.php" method="post">
                 <div class="row g-1">
-                    <h4>Hi, JMV</h4>
+                    <h4>Hi, </h4>
                 </div><br>
                 <div style="text-align: center;" 
                 style="border: solid black 1px; width:230px; height: 26px; border-radius:20px;">
                     <p class="fw-bold"><i class="fa fa-user-circle-o text-primary" aria-hidden="true">
-                    </i> jmvsheke100@gmail.com</p>
+                    </i> <?php print $email; ?></p>
+                    <?php
+                    if (isset($_SESSION['error'])) {
+                    ?>
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <strong>Error !</strong> <?php print $_SESSION['error']; ?>
+                        </div>
+
+                    <?php
+                    unset($_SESSION['error']);
+                    }
+                    ?>
                 </div><br>
                 <div class="row">
                     <div class="position-relative">
-                        <input type="password" class="form-control ps-4"
+                        <input type="password" name="pass" class="form-control ps-4"
                             placeholder="Password">
                         <i class="fa fa-key text-primary position-absolute"
                             style="top:10px; left: 18px;" aria-hidden="true"></i>
